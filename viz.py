@@ -131,39 +131,7 @@ title(fig, 'GDP per head since 1960, 1978 = 1', 'Real GDP per head in constant d
 plt.subplots_adjust(left=.07, right=.985, top=.82, bottom=.08)
 fig.savefig('out/assets/peers.png', facecolor=PAPER); plt.close(fig)
 
-# ------------------------------------------------------------------ 5. scatter-plot matrix, 1979 to 1997
-V = [('gdp_growth_pct', 'GDP growth\n(%)'), ('inflation_pct', 'Inflation\n(%)'), ('broad_money_growth_pct', 'Money growth\n(%)'),
-     ('trade_pct_gdp', 'Trade\n(% of GDP)'), ('fdi_inflows_pct_gdp', 'FDI\n(% of GDP)')]
-d = a.loc[1979:1997].dropna(subset=[v for v, _ in V]).copy()
-ERA = {'rural reform (1978 to 1984)': BLUE, 'dual track (1985 to 1991)': MID, 'market push (1992 to 1997)': RED}
-k = len(V)
-fig, axs = plt.subplots(k, k, figsize=(11, 11))
-for i, (vi, li) in enumerate(V):
-    for j, (vj, lj) in enumerate(V):
-        ax = axs[i, j]
-        x, y = d[vj].astype(float), d[vi].astype(float)
-        if i == j:
-            lo, hi = x.min(), x.max(); pad = (hi - lo) * .06
-            ax.set_xlim(lo - pad, hi + pad); ax.set_ylim(lo - pad, hi + pad)
-            hx = ax.twinx(); hx.set_yticks([]); hx.spines[['top', 'right', 'left']].set_visible(False)
-            e = np.histogram_bin_edges(x, 10)
-            hx.hist([x[d.era == er] for er in ERA], bins=e, color=list(ERA.values()), stacked=True, edgecolor=PAPER, alpha=.85)
-        else:
-            for er, col in ERA.items():
-                m = d.era == er
-                ax.scatter(x[m], y[m], s=18, c=col, alpha=.85, lw=0)
-            r = np.corrcoef(x, y)[0, 1]
-            ax.text(.04, .88, f'r = {r:.2f}', transform=ax.transAxes, fontsize=7.5, color=INK)
-        ax.tick_params(labelsize=6.5, length=2)
-        if i < k - 1: ax.set_xticklabels([])
-        if j > 0: ax.set_yticklabels([])
-        if i == k - 1: ax.set_xlabel(lj, fontsize=8)
-        if j == 0: ax.set_ylabel(li, fontsize=8)
-        ax.spines[['top', 'right']].set_visible(False)
-fig.legend(handles=[Line2D([], [], marker='o', ls='', c=c, label=e) for e, c in ERA.items()], loc='upper right', bbox_to_anchor=(.98, .935), ncol=3, frameon=False, fontsize=8.5)
-title(fig, 'What moved together, 1979 to 1997', f'{len(d)} years. Colour: stage of the reform. r: Pearson correlation.', y=.965)
-plt.subplots_adjust(left=.1, right=.98, top=.88, bottom=.08, wspace=.08, hspace=.08)
-fig.savefig('out/assets/scatter_matrix.png', facecolor=PAPER); plt.close(fig)
+# ------------------------------------------------------------------ 5. scatter-plot matrix: made by correlations.py, with r, confidence intervals and p-values
 
 # ------------------------------------------------------------------ 6. how life changed
 P = [('agriculture_pct_gdp', 'Agriculture, % of GDP', BLUE), ('urban_pct_population', 'Urban population, %', BLUE),
